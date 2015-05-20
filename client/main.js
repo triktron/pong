@@ -1,60 +1,59 @@
-var c, cctx, p1, p2, ball, animate = animate = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function(callback) {
+var c, cctx, p1, p2, ball, animate = animate = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function (callback) {
     window.setTimeout(callback, 1000 / 60)
 };
-var menu = {"open":true},SingleplayerBtn, multyplayerBtn;
+var menu = {
+        "open": true
+    },
+    SingleplayerBtn, multyplayerBtn;
 
 
 //
 //          init script
 //
 //         set p1, p2, ball and starts draw/update loop
-window.onload = function() {
+window.onload = function () {
     c = document.getElementById("canvas");
     c.width = window.innerWidth;
     c.height = window.innerHeight;
     cctx = c.getContext("2d");
-    
+
     SingleplayerBtn = new Button(50, 50, 100, 50, 'Singleplayer', {
-      'default': {
-        top: '#1879BD',
-        bottom: '#084D79'
-      },
-      'hover': {
-        top: '#678834',
-        bottom: '#093905'
-      },
-      'active': {
-        top: '#EB7723',
-        bottom: '#A80000'
-      }
-    }, function() {
-      p1 = new Player();
+        'default': {
+            top: '#1879BD',
+            bottom: '#084D79'
+        },
+        'hover': {
+            top: '#678834',
+            bottom: '#093905'
+        },
+        'active': {
+            top: '#EB7723',
+            bottom: '#A80000'
+        }
+    }, function () {
+        p1 = new Player();
         p2 = new Computer();
 
         p1.paddle = new Paddle(20, 384, 10, 80);
-        p2.paddle = new Paddle(994, 384, 10, 80);
+        p2.paddle = new Paddle(window.innerWidth - 29, 384, 10, 80);
         ball = new Ball(384, 512);
-      menu.open = false;
+        menu.open = false;
     });
     multyplayerBtn = new Button(160, 50, 100, 50, 'Multyplayer', {
-      'default': {
-        top: '#1879BD',
-        bottom: '#084D79'
-      },
-      'hover': {
-        top: '#678834',
-        bottom: '#093905'
-      },
-      'active': {
-        top: '#EB7723',
-        bottom: '#A80000'
-      }
-    }, function() {
-      menu.open = false;
-      p1 = new Player();
-
-        p1.paddle = new Paddle(20, 384, 10, 80);
-        ball = new Ball(384, 512);
+        'default': {
+            top: '#1879BD',
+            bottom: '#084D79'
+        },
+        'hover': {
+            top: '#678834',
+            bottom: '#093905'
+        },
+        'active': {
+            top: '#EB7723',
+            bottom: '#A80000'
+        }
+    }, function () {
+        alert("not yet made!!!");
     });
 
     animate(drawloop);
@@ -62,71 +61,71 @@ window.onload = function() {
 }
 
 // mouse listener for menu
-document.addEventListener("mousemove",function(e) {
-    SingleplayerBtn.mousemove(e.clientX,e.clientY);
-    multyplayerBtn.mousemove(e.clientX,e.clientY);
+document.addEventListener("mousemove", function (e) {
+    SingleplayerBtn.mousemove(e.clientX, e.clientY);
+    multyplayerBtn.mousemove(e.clientX, e.clientY);
 });
-document.addEventListener("mousedown",function(e) {
+document.addEventListener("mousedown", function (e) {
     if (menu.open) {
         SingleplayerBtn.mouseclick();
         multyplayerBtn.mouseclick();
     }
 });
-document.addEventListener("mouseup",function(e) {
+document.addEventListener("mouseup", function (e) {
     if (menu.open) {
         SingleplayerBtn.mouseup();
         multyplayerBtn.mouseup();
     }
 });
+
 function Button(x, y, w, h, text, colors, clickCB) {
-      this.x = x;
-      this.y = y;
-      this.width = w;
-      this.height = h;
-      this.colors = colors;
-      this.text = text;
+    this.x = x;
+    this.y = y;
+    this.width = w;
+    this.height = h;
+    this.colors = colors;
+    this.text = text;
 
-      this.state = 'default';  // current button state
-        
-      var isClicking = false;
+    this.state = 'default'; // current button state
 
-      /**
-       * Check to see if the user is hovering over.
-       */
-      this.mousemove = function(_x,_y) {
+    var isClicking = false;
+
+    /**
+     * Check to see if the user is hovering over.
+     */
+    this.mousemove = function (_x, _y) {
         // check for hover
         if (_x >= this.x && _x <= this.x + this.width &&
             _y >= this.y && _y <= this.y + this.height) {
-          this.state = 'hover';
+            this.state = 'hover';
+        } else {
+            this.state = 'default';
         }
-        else {
-          this.state = 'default';
-        }
-      };
-      /**
-       * Check to see if the user is clicking on the button.
-       */
-       this.mouseclick = function() {
-           // check for click
-           if (this.state == 'hover') {
+    };
+    /**
+     * Check to see if the user is clicking on the button.
+     */
+    this.mouseclick = function () {
+        // check for click
+        if (this.state == 'hover') {
             this.state = 'active';
-              
-            if (typeof clickCB === 'function' && !isClicking) {
-              clickCB();
-              isClicking = true;
-            }
-           }
-       }
-       this.mouseup = function() {
-           if (this.state == 'active') isClicking = false;
-       }
-       
-       
 
-      /**
-       * Draw the button.
-       */
-      this.draw = function() {
+            if (typeof clickCB === 'function' && !isClicking) {
+                clickCB();
+                isClicking = true;
+            }
+        }
+    }
+    this.mouseup = function () {
+        if (this.state == 'active') isClicking = false;
+    }
+
+
+
+    /**
+     * Draw the button.
+     */
+    this.draw = function () {
         cctx.save();
 
         var colors = this.colors[this.state];
@@ -147,23 +146,23 @@ function Button(x, y, w, h, text, colors, clickCB) {
         cctx.fillText(this.text, x, y);
 
         cctx.restore();
-      };
-    }
+    };
+}
 
 //
 //              draw loop
 //
 function drawloop() {
     animate(drawloop);
-    
+
     if (menu.open) {
         SingleplayerBtn.draw();
         multyplayerBtn.draw();
     } else {
         cctx.strokeStyle = "#FFF";
         cctx.lineWidth = 10;
-        cctx.strokeRect(10, 10, 1004, 748);
-        cctx.clearRect(15, 15, 995, 738);
+        cctx.strokeRect(10, 10, window.innerWidth - 20, window.innerHeight - 20);
+        cctx.clearRect(15, 15, window.innerWidth - 29, window.innerHeight - 29);
         p1.paddle.render();
         p2.paddle.render();
         ball.render();
@@ -172,14 +171,17 @@ function drawloop() {
 
 //          pridicte ai
 function predict() {
-    var fbx = ball.x, fby = ball.y, fbxV = ball.xV, fbyV = ball.yV;
-    while(fbx <= 978) {
+    var fbx = ball.x,
+        fby = ball.y,
+        fbxV = ball.xV,
+        fbyV = ball.yV;
+    while (fbx <= window.innerWidth - 39) {
         fbx += fbxV;
         fby += fbyV;
         if (fby <= 16) {
             fbyV *= -1;
-        } else if (fby >= 732) {
-           fbyV *= -1;
+        } else if (fby >= window.innerHeight - 39) {
+            fbyV *= -1;
         }
     }
     p2.paddle.p = fby - 35;
@@ -199,24 +201,24 @@ function Ball(x, y) {
     this.y = y;
     this.xV = -3;
     this.yV = 0;
-    this.render = function() {
+    this.render = function () {
         cctx.fillStyle = "blue";
         cctx.fillRect(this.x, this.y, 20, 20);
     };
-    this.update = function() {
+    this.update = function () {
         this.x += this.xV;
         this.y += this.yV;
         if (this.y <= 16) {
             this.yV *= -1;
-        } else if (this.y >= 732) {
-           this.yV *= -1;
+        } else if (this.y >= window.innerHeight - 39) {
+            this.yV *= -1;
         }
         if (this.x <= 16) {
             this.xV = -3;
             this.yV = 0;
             this.x = 512;
             this.y = 384;
-        } else if (this.x >= 988) {
+        } else if (this.x >= window.innerWidth - 39) {
             this.xV = 3;
             this.yV = 0;
             this.x = 512;
@@ -228,7 +230,7 @@ function Ball(x, y) {
             this.x += this.xV;
             predict();
         }
-        if (this.x >= 978 && this.y > p2.paddle.y && this.y < p2.paddle.y + 80) {
+        if (this.x >= window.innerWidth - 49 && this.y > p2.paddle.y && this.y < p2.paddle.y + 80) {
             this.xV *= -1;
             this.yV += p2.paddle.yV / 2;
             this.x += this.xV;
@@ -238,8 +240,10 @@ function Ball(x, y) {
 
 function Player() {
     this.paddle;
-    this.Update = function() {
-        if (KeysDown[38] && p1.paddle.y > 16) p1.paddle.yV = -3; else if (KeysDown[40] && p1.paddle.y < 672) p1.paddle.yV = 3; else p1.paddle.yV = 0;
+    this.Update = function () {
+        if (KeysDown[38] && p1.paddle.y > 16) p1.paddle.yV = -3;
+        else if (KeysDown[40] && p1.paddle.y < window.innerHeight - 109) p1.paddle.yV = 3;
+        else p1.paddle.yV = 0;
         p1.paddle.y += p1.paddle.yV;
     };
     this.score = 0;
@@ -247,9 +251,9 @@ function Player() {
 
 function Computer() {
     this.paddle;
-    this.Update = function() {
-            if (p2.paddle.p > p2.paddle.y + 10) p2.paddle.y += 3;
-            else if (p2.paddle.p < p2.paddle.y + 70) p2.paddle.y -= 3;
+    this.Update = function () {
+        if (p2.paddle.p > p2.paddle.y + 10) p2.paddle.y += 3;
+        else if (p2.paddle.p < p2.paddle.y + 70) p2.paddle.y -= 3;
     };
     this.score = 0;
 }
@@ -262,7 +266,7 @@ function Paddle(x, y, width, height) {
     this.xV = 0;
     this.yV = 0;
     this.p = 384;
-    this.render = function() {
+    this.render = function () {
         cctx.fillStyle = "red";
         cctx.fillRect(this.x, this.y, this.width, this.height);
     }
@@ -271,10 +275,10 @@ function Paddle(x, y, width, height) {
 var KeysDown = [];
 for (var i = 8; i < 222; i++) KeysDown[i] = false;
 
-document.addEventListener("keydown", function(e) {
+document.addEventListener("keydown", function (e) {
     KeysDown[e.keyCode] = true;
 });
 
-document.addEventListener("keyup", function(e) {
+document.addEventListener("keyup", function (e) {
     KeysDown[e.keyCode] = false;
 });
