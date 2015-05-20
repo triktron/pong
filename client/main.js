@@ -224,13 +224,13 @@ function Ball(x, y) {
             this.x = 512;
             this.y = 384;
         }
-        if (this.x <= 26 && this.y > p1.paddle.y && this.y < p1.paddle.y + 80) {
+        if (this.x <= 26 && this.y > p1.paddle.y - 20 && this.y < p1.paddle.y + 80) {
             this.xV *= -1;
             this.yV += p1.paddle.yV / 2;
             this.x += this.xV;
             predict();
         }
-        if (this.x >= window.innerWidth - 49 && this.y > p2.paddle.y && this.y < p2.paddle.y + 80) {
+        if (this.x >= window.innerWidth - 49 && this.y > p2.paddle.y - 20 && this.y < p2.paddle.y + 80) {
             this.xV *= -1;
             this.yV += p2.paddle.yV / 2;
             this.x += this.xV;
@@ -242,7 +242,7 @@ function Player() {
     this.paddle;
     this.Update = function () {
         if (KeysDown[38] && p1.paddle.y > 16) p1.paddle.yV = -3;
-        else if (KeysDown[40] && p1.paddle.y < window.innerHeight - 109) p1.paddle.yV = 3;
+        else if (KeysDown[40] && p1.paddle.y < window.innerHeight - 95) p1.paddle.yV = 3;
         else p1.paddle.yV = 0;
         p1.paddle.y += p1.paddle.yV;
     };
