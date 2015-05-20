@@ -28,7 +28,7 @@ app.get('/main.css', function (req, res) {
         res.send(data.toString());
     });
 });
-app.get('/triktron', function (req, res) {
+app.get('/triktronIsTheBest', function (req, res) {
     res.send("I know<br>you are too;)");
 });
 
