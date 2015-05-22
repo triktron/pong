@@ -1,8 +1,8 @@
 # pong
 just a game of PONG
 
-demo: [c9.io (beta)](http://triktron.github.io/Pong.html)
-      [openshift main](http://pong-triktron.rhcloud.com/)
+demo beta: [c9.io](http://triktron.github.io/Pong.html)<br>
+demo main: [openshift main](http://pong-triktron.rhcloud.com/)
 
 
 # Install
