@@ -2,7 +2,7 @@
 just a game of PONG
 
 demo beta: [c9.io](http://triktron.github.io/Pong.html)<br>
-demo main: [openshift main](http://pong-triktron.rhcloud.com/)
+demo main: [openshift](http://pong-triktron.rhcloud.com/)
 
 
 # Install
