@@ -12,3 +12,4 @@ B: open up an terminal and type `git clone https://github.com/triktron/pong.git`
 
 # Run
 just open an terminal and type `node server.js` and press enter.
+open your web browser and go to [localhost:8080](localhost:8080)
