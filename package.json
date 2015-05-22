@@ -7,6 +7,8 @@
   "author": "triktron <ele.trik@hotmail.com>",
   "dependencies": {
     "express": "~3.2.4",
-    "socket.io": "~0.9.14"
+    "node-uuid": "^1.4.3",
+    "socket.io": "~0.9.14",
+    "ws": "^0.7.2"
   }
 }

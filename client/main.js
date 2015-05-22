@@ -1,80 +1,27 @@
-var c, cctx, p1, p2, ball, animate = animate = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function (callback) {
-    window.setTimeout(callback, 1000 / 60)
+"use strict";
+var c, cctx, p1, p2, ball, animate = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function (callback) {
+    window.setTimeout(callback, 1000 / 60);
 };
 var menu = {
-        "open": true
-    },
-    SingleplayerBtn, multyplayerBtn;
-
-
-//
-//          init script
-//
-//         set p1, p2, ball and starts draw/update loop
-window.onload = function () {
-    c = document.getElementById("canvas");
-    c.width = window.innerWidth;
-    c.height = window.innerHeight;
-    cctx = c.getContext("2d");
-
-    SingleplayerBtn = new Button(50, 50, 100, 50, 'Singleplayer', {
-        'default': {
-            top: '#1879BD',
-            bottom: '#084D79'
-        },
-        'hover': {
-            top: '#678834',
-            bottom: '#093905'
-        },
-        'active': {
-            top: '#EB7723',
-            bottom: '#A80000'
-        }
-    }, function () {
-        p1 = new Player();
-        p2 = new Computer();
-
-        p1.paddle = new Paddle(20, 384, 10, 80);
-        p2.paddle = new Paddle(window.innerWidth - 29, 384, 10, 80);
-        ball = new Ball(384, 512);
-        menu.open = false;
-    });
-    multyplayerBtn = new Button(160, 50, 100, 50, 'Multyplayer', {
-        'default': {
-            top: '#1879BD',
-            bottom: '#084D79'
-        },
-        'hover': {
-            top: '#678834',
-            bottom: '#093905'
-        },
-        'active': {
-            top: '#EB7723',
-            bottom: '#A80000'
-        }
-    }, function () {
-        alert("not yet made!!!");
-    });
-
-    animate(drawloop);
-    precessGame();
-}
+    "open": true
+};
+var websocket;
 
 // mouse listener for menu
 document.addEventListener("mousemove", function (e) {
-    SingleplayerBtn.mousemove(e.clientX, e.clientY);
-    multyplayerBtn.mousemove(e.clientX, e.clientY);
+    menu.SingleplayerBtn.mousemove(e.clientX, e.clientY);
+    menu.multyplayerBtn.mousemove(e.clientX, e.clientY);
 });
 document.addEventListener("mousedown", function (e) {
     if (menu.open) {
-        SingleplayerBtn.mouseclick();
-        multyplayerBtn.mouseclick();
+        menu.SingleplayerBtn.mouseclick();
+        menu.multyplayerBtn.mouseclick();
     }
 });
 document.addEventListener("mouseup", function (e) {
     if (menu.open) {
-        SingleplayerBtn.mouseup();
-        multyplayerBtn.mouseup();
+        menu.SingleplayerBtn.mouseup();
+        menu.multyplayerBtn.mouseup();
     }
 });
 
@@ -156,8 +103,8 @@ function drawloop() {
     animate(drawloop);
 
     if (menu.open) {
-        SingleplayerBtn.draw();
-        multyplayerBtn.draw();
+        menu.SingleplayerBtn.draw();
+        menu.multyplayerBtn.draw();
     } else {
         cctx.strokeStyle = "#FFF";
         cctx.lineWidth = 10;
@@ -270,6 +217,59 @@ function Paddle(x, y, width, height) {
         cctx.fillStyle = "red";
         cctx.fillRect(this.x, this.y, this.width, this.height);
     }
+}
+
+//
+//          init script
+//
+//         set p1, p2, ball and starts draw/update loop
+window.onload = function () {
+    c = document.getElementById("canvas");
+    c.width = window.innerWidth;
+    c.height = window.innerHeight;
+    cctx = c.getContext("2d");
+
+    var delfautStn = {
+        'default': {
+            top: '#1879BD',
+            bottom: '#084D79'
+        },
+        'hover': {
+            top: '#678834',
+            bottom: '#093905'
+        },
+        'active': {
+            top: '#EB7723',
+            bottom: '#A80000'
+        }
+    };
+    menu.SingleplayerBtn = new Button(50, 50, 100, 50, 'Singleplayer', delfautStn, function () {
+        p1 = new Player();
+        p2 = new Computer();
+
+        p1.paddle = new Paddle(20, 384, 10, 80);
+        p2.paddle = new Paddle(window.innerWidth - 29, 384, 10, 80);
+        ball = new Ball(384, 512);
+        menu.open = false;
+        precessGame();
+    });
+    menu.multyplayerBtn = new Button(160, 50, 100, 50, 'Multyplayer', delfautStn, function () {
+        alert("not yet made!!!");
+    });
+
+    var wsUrl = "ws://" + window.location.hostname + ":" + window.location.port;
+    websocket = new WebSocket(wsUrl);
+    websocket.onopen = function (evt) {
+        console.log("conected to websocket");
+    };
+    websocket.onmessage = function (evt) {
+        console.log(evt.data);
+    };
+    websocket.onerror = function (evt) {
+        console.log(evt.data);
+    };
+    console.log("conecting to", wsUrl);
+    animate(drawloop);
 }
 
 var KeysDown = [];
