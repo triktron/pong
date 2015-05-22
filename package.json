@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "description": "A game of pong",
   "main": "server.js",
+  "scripts": {
+  "start": "server.js"
+},
   "repository": "",
   "author": "triktron <ele.trik@hotmail.com>",
   "dependencies": {
