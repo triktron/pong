@@ -205,6 +205,13 @@ function Computer() {
     this.score = 0;
 }
 
+function ServerPlayer() {
+    this.paddle;
+    this.Update = function () {
+        websocket.send('{"GetPlayer2Pos":true,"name":"main"}');
+    };
+    this.score = 0;
+}
 function Paddle(x, y, width, height) {
     this.x = x;
     this.y = y;
@@ -254,13 +261,21 @@ window.onload = function () {
         precessGame();
     });
     menu.multyplayerBtn = new Button(160, 50, 100, 50, 'Multyplayer', delfautStn, function () {
-        alert("not yet made!!!");
+        p1 = new Player();
+        p2 = new ServerPlayer();
+
+        p1.paddle = new Paddle(20, 384, 10, 80);
+        p2.paddle = new Paddle(window.innerWidth - 29, 384, 10, 80);
+        ball = new Ball(384, 512);
+        menu.open = false;
+        precessGame();
     });
 
     var wsUrl = "ws://" + window.location.hostname + ":" + window.location.port;
     websocket = new WebSocket(wsUrl);
     websocket.onopen = function (evt) {
         console.log("conected to websocket");
+        websocket.send('{"CONNECTING":true,"name":"main"}');
     };
     websocket.onmessage = function (evt) {
         console.log(evt.data);
@@ -268,6 +283,9 @@ window.onload = function () {
     websocket.onerror = function (evt) {
         console.log(evt.data);
     };
+    function wsSend(msg) {
+        websocket.send(msg);
+    }
     console.log("conecting to", wsUrl);
     animate(drawloop);
 }
