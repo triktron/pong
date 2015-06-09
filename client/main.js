@@ -2,28 +2,11 @@
 var c, cctx, p1, p2, ball, animate = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function (callback) {
     window.setTimeout(callback, 1000 / 60);
 };
+var room = location.pathname.split('/')[2] || false;
 var menu = {
-    "open": true
+    "open": room ? false : true
 };
-var websocket;
-
-// mouse listener for menu
-document.addEventListener("mousemove", function (e) {
-    menu.SingleplayerBtn.mousemove(e.clientX, e.clientY);
-    menu.multyplayerBtn.mousemove(e.clientX, e.clientY);
-});
-document.addEventListener("mousedown", function (e) {
-    if (menu.open) {
-        menu.SingleplayerBtn.mouseclick();
-        menu.multyplayerBtn.mouseclick();
-    }
-});
-document.addEventListener("mouseup", function (e) {
-    if (menu.open) {
-        menu.SingleplayerBtn.mouseup();
-        menu.multyplayerBtn.mouseup();
-    }
-});
+var ws;
 
 function Button(x, y, w, h, text, colors, clickCB) {
     this.x = x;
@@ -212,6 +195,7 @@ function ServerPlayer() {
     };
     this.score = 0;
 }
+
 function Paddle(x, y, width, height) {
     this.x = x;
     this.y = y;
@@ -236,59 +220,102 @@ window.onload = function () {
     c.height = window.innerHeight;
     cctx = c.getContext("2d");
 
-    var delfautStn = {
-        'default': {
-            top: '#1879BD',
-            bottom: '#084D79'
-        },
-        'hover': {
-            top: '#678834',
-            bottom: '#093905'
-        },
-        'active': {
-            top: '#EB7723',
-            bottom: '#A80000'
-        }
-    };
-    menu.SingleplayerBtn = new Button(50, 50, 100, 50, 'Singleplayer', delfautStn, function () {
-        p1 = new Player();
-        p2 = new Computer();
+    if (room) {
+        console.log("conecting to ", room);
+        var wsUrl = "w" + (window.location.protocol == "https:" ? "ss://" : "s://") + window.location.hostname + ":" + window.location.port + "/" + room;
+        ws = new WebSocket(wsUrl);
+        ws.onopen = function() {
+            ws.send("join;" + room);
+        };
+        ws.onmessage = function (evt) {
+            console.log(evt.data);
+            var comand = evt.data.split(";")[0];
+            var args = evt.data.split(";").splice(1,evt.data.split(";").length - 1);
 
-        p1.paddle = new Paddle(20, 384, 10, 80);
-        p2.paddle = new Paddle(window.innerWidth - 29, 384, 10, 80);
-        ball = new Ball(384, 512);
-        menu.open = false;
-        precessGame();
-    });
-    menu.multyplayerBtn = new Button(160, 50, 100, 50, 'Multyplayer', delfautStn, function () {
-        p1 = new Player();
-        p2 = new ServerPlayer();
+            switch (comand) {
+                case "SetId":
+                    console.log("recefed id",args[0]);
+                    break;
+            }
+        };
+    } else {
+        var delfautStn = {
+            'default': {
+                top: '#1879BD',
+                bottom: '#084D79'
+            },
+            'hover': {
+                top: '#678834',
+                bottom: '#093905'
+            },
+            'active': {
+                top: '#EB7723',
+                bottom: '#A80000'
+            }
+        };
+        menu.SingleplayerBtn = new Button(50, 50, 100, 50, 'Singleplayer', delfautStn, function () {
+            p1 = new Player();
+            p2 = new Computer();
 
-        p1.paddle = new Paddle(20, 384, 10, 80);
-        p2.paddle = new Paddle(window.innerWidth - 29, 384, 10, 80);
-        ball = new Ball(384, 512);
-        menu.open = false;
-        precessGame();
-    });
+            p1.paddle = new Paddle(20, 384, 10, 80);
+            p2.paddle = new Paddle(window.innerWidth - 29, 384, 10, 80);
+            ball = new Ball(384, 512);
+            menu.open = false;
+            precessGame();
+        });
+        menu.multyplayerBtn = new Button(160, 50, 100, 50, 'Multyplayer', delfautStn, function () {
+            /*p1 = new Player();
+            p2 = new ServerPlayer();
 
-    var wsUrl = "ws://" + window.location.hostname + ":" + window.location.port;
-    websocket = new WebSocket(wsUrl);
-    websocket.onopen = function (evt) {
+            p1.paddle = new Paddle(20, 384, 10, 80);
+            p2.paddle = new Paddle(window.innerWidth - 29, 384, 10, 80);
+            ball = new Ball(384, 512);
+            menu.open = false;
+            precessGame();*/
+            var room = "";
+            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+            for (var i = 0; i < 5; i++)
+                room += possible.charAt(Math.floor(Math.random() * possible.length));
+            window.location = '/room/' + room;
+
+        });
+        animate(drawloop);
+    }
+    /*var wsUrl = "w" + (window.location.protocol == "https:" ? "ss://" : "s://") + window.location.hostname + ":" + window.location.port;
+    ws = new WebSocket(wsUrl);
+    ws.onopen = function (evt) {
         console.log("conected to websocket");
-        websocket.send('{"CONNECTING":true,"name":"main"}');
+        ws.send('{"CONNECTING":true,"name":"main"}');
     };
-    websocket.onmessage = function (evt) {
+    ws.onmessage = function (evt) {
         console.log(evt.data);
     };
-    websocket.onerror = function (evt) {
+    ws.onerror = function (evt) {
         console.log(evt.data);
     };
     function wsSend(msg) {
-        websocket.send(msg);
+        ws.send(msg);
     }
-    console.log("conecting to", wsUrl);
-    animate(drawloop);
+    console.log("conecting to", wsUrl);*/
 }
+
+// mouse listener for menu
+document.addEventListener("mousemove", function (e) {
+    if (!menu.open) return;
+    menu.SingleplayerBtn.mousemove(e.clientX, e.clientY);
+    menu.multyplayerBtn.mousemove(e.clientX, e.clientY);
+});
+document.addEventListener("mousedown", function (e) {
+    if (!menu.open) return;
+    menu.SingleplayerBtn.mouseclick();
+    menu.multyplayerBtn.mouseclick();
+});
+document.addEventListener("mouseup", function (e) {
+    if (!menu.open) return;
+    menu.SingleplayerBtn.mouseup();
+    menu.multyplayerBtn.mouseup();
+});
 
 var KeysDown = [];
 for (var i = 8; i < 222; i++) KeysDown[i] = false;
